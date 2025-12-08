@@ -35,5 +35,5 @@ else()
     set(THREAD_LIB "") # Windows 不需要 pthread
 endif()
 
-add_subdirectory(tests)
+add_subdirectory(test)
 add_subdirectory(example)
