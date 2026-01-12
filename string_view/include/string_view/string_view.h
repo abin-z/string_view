@@ -20,12 +20,22 @@ namespace abin
 class string_view
 {
  public:
-  using value_type = char;
-  using size_type = std::size_t;
-  using const_iterator = const char *;
+  using traits_type = std::char_traits<char>;  // 目前仅支持 char 类型
+  using value_type = char;                     // 目前仅支持 char 类型
+  using pointer = value_type *;
+  using const_pointer = const value_type *;
+  using reference = value_type &;
+  using const_reference = const value_type &;
+  using const_iterator = const value_type *;
+  using iterator = const_iterator;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+  using reverse_iterator = const_reverse_iterator;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
+  static constexpr size_type npos = static_cast<size_type>(-1);
 
  private:
-  const char *data_;
+  const value_type *data_;
   size_type size_;
 
  public:
@@ -68,7 +78,7 @@ class string_view
   }
 
   // ---------- 子串 ----------
-  string_view substr(size_type pos, size_type count = std::string::npos) const
+  string_view substr(size_type pos, size_type count = string_view::npos) const
   {
     if (pos > size_) throw std::out_of_range("string_view::substr");
     count = std::min(count, size_ - pos);
@@ -114,7 +124,8 @@ class string_view
 // ---------- 流输出 ----------
 inline std::ostream &operator<<(std::ostream &os, const string_view &sv)
 {
-  return os.write(sv.data(), sv.size());
+  if (sv.size() != 0) os.write(sv.data(), sv.size());
+  return os;
 }
 
 // ---------- 转 std::string ----------
