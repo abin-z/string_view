@@ -12,6 +12,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace abin
 {
@@ -52,12 +53,12 @@ class string_view
   }
   constexpr string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
-  
+
   constexpr string_view &operator=(const string_view &) noexcept = default;
   ~string_view() = default;
 
   // ---------- 访问 ----------
-  constexpr const char *data() const noexcept
+  constexpr const_pointer data() const noexcept
   {
     return data_;
   }
@@ -74,19 +75,28 @@ class string_view
     return size_ == 0;
   }
 
-  const char &operator[](size_type pos) const
+  constexpr const_reference operator[](size_type pos) const
   {
     return data_[pos];
   }
 
-  const char &at(size_type pos) const
+  constexpr const_reference at(size_type pos) const
   {
     if (pos >= size_) throw std::out_of_range("abin::string_view::at");
     return data_[pos];
   }
 
+  constexpr const_reference front() const
+  {
+    return data_[0];
+  }
+  constexpr const_reference back() const
+  {
+    return data_[size_ - 1];
+  }
+
   // ---------- 子串 ----------
-  string_view substr(size_type pos, size_type count = string_view::npos) const
+  constexpr string_view substr(size_type pos, size_type count = string_view::npos) const
   {
     if (pos > size_) throw std::out_of_range("string_view::substr");
     count = std::min(count, size_ - pos);
@@ -94,17 +104,24 @@ class string_view
   }
 
   // ---------- 修改视图 ----------
-  void remove_prefix(size_type n)
+  constexpr void remove_prefix(size_type n)
   {
     n = std::min(n, size_);
     data_ += n;
     size_ -= n;
   }
 
-  void remove_suffix(size_type n)
+  constexpr void remove_suffix(size_type n)
   {
     n = std::min(n, size_);
     size_ -= n;
+  }
+
+  constexpr void swap(string_view &other) noexcept
+  {
+    using std::swap;
+    swap(data_, other.data_);
+    swap(size_, other.size_);
   }
 
   // ---------- 迭代器 ----------
