@@ -47,10 +47,8 @@ class string_view
 
   explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
 
-  explicit string_view(const char *str) noexcept :
-    data_(str), size_((str != nullptr) ? std::char_traits<char>::length(str) : 0)
-  {
-  }
+  explicit string_view(const char *str) : data_(str), size_(std::char_traits<char>::length(str)) {}
+
   constexpr string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
 
@@ -74,7 +72,7 @@ class string_view
   {
     return size_ == 0;
   }
-
+  // If pos < size() is false, the behavior is undefined.
   constexpr const_reference operator[](size_type pos) const
   {
     return data_[pos];
@@ -85,11 +83,12 @@ class string_view
     if (pos >= size_) throw std::out_of_range("abin::string_view::at");
     return data_[pos];
   }
-
+  // If empty() is true, the behavior is undefined.
   constexpr const_reference front() const
   {
     return data_[0];
   }
+  // If empty() is true, the behavior is undefined.
   constexpr const_reference back() const
   {
     return data_[size_ - 1];
@@ -98,7 +97,7 @@ class string_view
   // ---------- 子串 ----------
   constexpr string_view substr(size_type pos, size_type count = string_view::npos) const
   {
-    if (pos > size_) throw std::out_of_range("string_view::substr");
+    if (pos > size_) throw std::out_of_range("abin::string_view::substr");
     count = std::min(count, size_ - pos);
     return {data_ + pos, count};
   }
