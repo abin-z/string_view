@@ -73,7 +73,7 @@ class string_view
 
   const char &at(size_type pos) const
   {
-    if (pos >= size_) throw std::out_of_range("string_view::at");
+    if (pos >= size_) throw std::out_of_range("abin::string_view::at");
     return data_[pos];
   }
 
@@ -107,6 +107,30 @@ class string_view
   const_iterator end() const noexcept
   {
     return data_ + size_;
+  }
+  const_iterator cbegin() const noexcept
+  {
+    return data_;
+  }
+  const_iterator cend() const noexcept
+  {
+    return data_ + size_;
+  }
+  const_reverse_iterator rbegin() const noexcept
+  {
+    return const_reverse_iterator(end());
+  }
+  const_reverse_iterator rend() const noexcept
+  {
+    return const_reverse_iterator(begin());
+  }
+  const_reverse_iterator crbegin() const noexcept
+  {
+    return const_reverse_iterator(end());
+  }
+  const_reverse_iterator crend() const noexcept
+  {
+    return const_reverse_iterator(begin());
   }
 
   // ---------- 比较 ----------
