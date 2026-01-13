@@ -50,7 +50,11 @@ class string_view
     data_(str), size_((str != nullptr) ? std::char_traits<char>::length(str) : 0)
   {
   }
+  constexpr string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
+  
+  constexpr string_view &operator=(const string_view &) noexcept = default;
+  ~string_view() = default;
 
   // ---------- 访问 ----------
   constexpr const char *data() const noexcept
@@ -58,6 +62,10 @@ class string_view
     return data_;
   }
   constexpr size_type size() const noexcept
+  {
+    return size_;
+  }
+  constexpr size_type length() const noexcept
   {
     return size_;
   }
