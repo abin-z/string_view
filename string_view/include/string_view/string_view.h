@@ -218,23 +218,37 @@ class string_view
   {
     return const_reverse_iterator(begin());
   }
-
-  // ---------- Comparison ----------
-  bool operator==(string_view other) const noexcept
-  {
-    return compare(other) == 0;
-  }
-
-  bool operator!=(string_view other) const noexcept
-  {
-    return !(*this == other);
-  }
 };
+
+inline bool operator==(string_view lhs, string_view rhs) noexcept
+{
+  return lhs.compare(rhs) == 0;
+}
+inline bool operator!=(string_view lhs, string_view rhs) noexcept
+{
+  return !(lhs == rhs);
+}
+inline bool operator<(string_view lhs, string_view rhs) noexcept
+{
+  return lhs.compare(rhs) < 0;
+}
+inline bool operator<=(string_view lhs, string_view rhs) noexcept
+{
+  return lhs.compare(rhs) <= 0;
+}
+inline bool operator>(string_view lhs, string_view rhs) noexcept
+{
+  return lhs.compare(rhs) > 0;
+}
+inline bool operator>=(string_view lhs, string_view rhs) noexcept
+{
+  return lhs.compare(rhs) >= 0;
+}
 
 // ---------- 流输出 ----------
 inline std::ostream &operator<<(std::ostream &os, string_view sv)
 {
-  if (sv.size() != 0) os.write(sv.data(), sv.size());
+  if (sv.size() != 0) os.write(sv.data(), static_cast<std::streamsize>(sv.size()));
   return os;
 }
 
