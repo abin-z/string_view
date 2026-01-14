@@ -46,8 +46,8 @@ class string_view
   constexpr string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
 
   explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
-
-  explicit string_view(const char *str) : data_(str), size_(std::char_traits<char>::length(str)) {}
+  // Precondition: str != nullptr
+  explicit string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}
 
   constexpr string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
