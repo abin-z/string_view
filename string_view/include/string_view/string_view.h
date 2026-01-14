@@ -80,7 +80,7 @@ class string_view
   }
 
   // If pos < size() is false, the behavior is undefined.
-  const_reference operator[](size_type pos) const
+  const_reference operator[](size_type pos) const noexcept
   {
     return data_[pos];
   }
@@ -91,12 +91,12 @@ class string_view
     return data_[pos];
   }
   // If empty() is true, the behavior is undefined.
-  const_reference front() const
+  const_reference front() const noexcept
   {
     return data_[0];
   }
   // If empty() is true, the behavior is undefined.
-  const_reference back() const
+  const_reference back() const noexcept
   {
     return data_[size_ - 1];
   }
@@ -165,14 +165,14 @@ class string_view
   }
 
   // ---------- Modifiers ----------
-  void remove_prefix(size_type n)
+  void remove_prefix(size_type n) noexcept
   {
     n = std::min(n, size_);
     data_ += n;
     size_ -= n;
   }
 
-  void remove_suffix(size_type n)
+  void remove_suffix(size_type n) noexcept
   {
     n = std::min(n, size_);
     size_ -= n;
