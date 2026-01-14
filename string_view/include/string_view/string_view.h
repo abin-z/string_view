@@ -44,15 +44,15 @@ class string_view
   constexpr string_view() noexcept : data_(nullptr), size_(0) {}
 
   constexpr string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
+  // Precondition: str != nullptr
+  string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}
 
   explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
-  // Precondition: str != nullptr
-  explicit string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}
 
   constexpr string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
 
-  constexpr string_view &operator=(const string_view &) noexcept = default;
+  string_view &operator=(const string_view &) noexcept = default;
   ~string_view() = default;
 
   // ---------- Capacity ----------
@@ -85,7 +85,7 @@ class string_view
     return data_[pos];
   }
 
-  constexpr const_reference at(size_type pos) const
+  const_reference at(size_type pos) const
   {
     if (pos >= size_) throw std::out_of_range("abin::string_view::at");
     return data_[pos];
@@ -102,7 +102,7 @@ class string_view
   }
 
   // ---------- Operations ----------
-  constexpr size_type copy(char *dest, size_type count, size_type pos = 0) const
+  size_type copy(char *dest, size_type count, size_type pos = 0) const
   {
     if (pos > size_) throw std::out_of_range("abin::string_view::copy");
     size_type rcount = std::min(count, size_ - pos);
@@ -113,28 +113,72 @@ class string_view
     return rcount;
   }
 
-  constexpr string_view substr(size_type pos, size_type count = string_view::npos) const
+  string_view substr(size_type pos, size_type count = string_view::npos) const
   {
     if (pos > size_) throw std::out_of_range("abin::string_view::substr");
     count = std::min(count, size_ - pos);
     return {data_ + pos, count};
   }
 
+  // 与另一个 string_view 比较
+  int compare(string_view other) const noexcept
+  {
+    size_type min_len = std::min(size_, other.size_);
+    int r = traits_type::compare(data_, other.data_, min_len);
+    if (r != 0) return r;
+    if (size_ < other.size_) return -1;
+    if (size_ > other.size_) return 1;
+    return 0;
+  }
+
+  // 与 C 字符串比较
+  int compare(const char *s) const
+  {
+    string_view sv(s);  // 利用已有的 string_view(const char*)
+    return compare(sv);
+  }
+
+  // 子串比较
+  int compare(size_type pos1, size_type count1, string_view sv) const
+  {
+    if (pos1 > size_) throw std::out_of_range("abin::string_view::compare");
+    string_view sub1 = substr(pos1, count1);
+    return sub1.compare(sv);
+  }
+
+  int compare(size_type pos1, size_type count1, string_view sv, size_type pos2, size_type count2) const
+  {
+    if (pos1 > size_) throw std::out_of_range("abin::string_view::compare");
+    string_view sub1 = substr(pos1, count1);
+    string_view sub2 = sv.substr(pos2, count2);
+    return sub1.compare(sub2);
+  }
+
+  int compare(size_type pos1, size_type count1, const char *s) const
+  {
+    return compare(pos1, count1, string_view(s));
+  }
+
+  int compare(size_type pos1, size_type count1, const char *s, size_type n) const
+  {
+    return compare(pos1, count1, string_view(s, n));
+  }
+
   // ---------- Modifiers ----------
-  constexpr void remove_prefix(size_type n)
+  void remove_prefix(size_type n)
   {
     n = std::min(n, size_);
     data_ += n;
     size_ -= n;
   }
 
-  constexpr void remove_suffix(size_type n)
+  void remove_suffix(size_type n)
   {
     n = std::min(n, size_);
     size_ -= n;
   }
 
-  constexpr void swap(string_view &other) noexcept
+  void swap(string_view &other) noexcept
   {
     using std::swap;
     swap(data_, other.data_);
@@ -176,40 +220,28 @@ class string_view
   }
 
   // ---------- Comparison ----------
-  bool operator==(const string_view &other) const noexcept
+  bool operator==(string_view other) const noexcept
   {
-    return size_ == other.size_ && std::equal(data_, data_ + size_, other.data_);
+    return compare(other) == 0;
   }
 
-  bool operator!=(const string_view &other) const noexcept
+  bool operator!=(string_view other) const noexcept
   {
     return !(*this == other);
   }
 };
 
 // ---------- 流输出 ----------
-inline std::ostream &operator<<(std::ostream &os, const string_view &sv)
+inline std::ostream &operator<<(std::ostream &os, string_view sv)
 {
   if (sv.size() != 0) os.write(sv.data(), sv.size());
   return os;
 }
 
 // ---------- 转 std::string ----------
-inline std::string to_string(const string_view &sv)
+inline std::string to_string(string_view sv)
 {
   return {sv.data(), sv.size()};
 }
-
-// ---------- 字面量操作符 (_sv) ----------
-inline namespace literals
-{
-inline namespace string_view_literals
-{
-constexpr string_view operator""_sv(const char *str, std::size_t len)
-{
-  return {str, len};
-}
-}  // namespace string_view_literals
-}  // namespace literals
 
 }  // namespace abin
