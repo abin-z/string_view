@@ -68,10 +68,15 @@ class string_view
   {
     return size_;
   }
+  constexpr size_type max_size() const noexcept
+  {
+    return npos;
+  }
   constexpr bool empty() const noexcept
   {
     return size_ == 0;
   }
+
   // If pos < size() is false, the behavior is undefined.
   constexpr const_reference operator[](size_type pos) const
   {
