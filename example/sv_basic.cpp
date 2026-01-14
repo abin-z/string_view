@@ -1,7 +1,12 @@
 #include <iostream>
 
+#include "string_view/string_view.h"
+
 int main()
 {
-  std::cout << "Hello, String View Example!" << std::endl;
+  abin::string_view sv("Hello, String View Example!");
+  abin::string_view sv2 = "Hello, String View Example2!";
+  std::cout << sv << '\n';
+  std::cout << sv2 << '\n';
   return 0;
 }
