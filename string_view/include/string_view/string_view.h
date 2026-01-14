@@ -55,11 +55,7 @@ class string_view
   constexpr string_view &operator=(const string_view &) noexcept = default;
   ~string_view() = default;
 
-  // ---------- 访问 ----------
-  constexpr const_pointer data() const noexcept
-  {
-    return data_;
-  }
+  // ---------- Capacity ----------
   constexpr size_type size() const noexcept
   {
     return size_;
@@ -75,6 +71,12 @@ class string_view
   constexpr bool empty() const noexcept
   {
     return size_ == 0;
+  }
+
+  // ---------- Element access ----------
+  constexpr const_pointer data() const noexcept
+  {
+    return data_;
   }
 
   // If pos < size() is false, the behavior is undefined.
@@ -99,7 +101,18 @@ class string_view
     return data_[size_ - 1];
   }
 
-  // ---------- 子串 ----------
+  // ---------- Operations ----------
+  constexpr size_type copy(char *dest, size_type count, size_type pos = 0) const
+  {
+    if (pos > size_) throw std::out_of_range("abin::string_view::copy");
+    size_type rcount = std::min(count, size_ - pos);
+    if (rcount > 0)
+    {
+      traits_type::copy(dest, data_ + pos, rcount);  // 等价于 memcpy
+    }
+    return rcount;
+  }
+
   constexpr string_view substr(size_type pos, size_type count = string_view::npos) const
   {
     if (pos > size_) throw std::out_of_range("abin::string_view::substr");
@@ -107,7 +120,7 @@ class string_view
     return {data_ + pos, count};
   }
 
-  // ---------- 修改视图 ----------
+  // ---------- Modifiers ----------
   constexpr void remove_prefix(size_type n)
   {
     n = std::min(n, size_);
@@ -128,7 +141,7 @@ class string_view
     swap(size_, other.size_);
   }
 
-  // ---------- 迭代器 ----------
+  // ---------- Iterators ----------
   const_iterator begin() const noexcept
   {
     return data_;
@@ -162,7 +175,7 @@ class string_view
     return const_reverse_iterator(begin());
   }
 
-  // ---------- 比较 ----------
+  // ---------- Comparison ----------
   bool operator==(const string_view &other) const noexcept
   {
     return size_ == other.size_ && std::equal(data_, data_ + size_, other.data_);
