@@ -33,7 +33,7 @@ class string_view
   using reverse_iterator = const_reverse_iterator;
   using size_type = size_t;
   using difference_type = ptrdiff_t;
-  static constexpr size_type npos = static_cast<size_type>(-1);
+  static constexpr auto npos{static_cast<size_type>(-1)};
 
  private:
   const value_type *data_;
@@ -41,46 +41,46 @@ class string_view
 
  public:
   // ---------- 构造 ----------
-  constexpr string_view() noexcept : data_(nullptr), size_(0) {}
+  string_view() noexcept : data_(nullptr), size_(0) {}
 
-  constexpr string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
+  string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
   // Precondition: str != nullptr
   string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}
 
   explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
 
-  constexpr string_view(const string_view &) noexcept = default;
+  string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
 
   string_view &operator=(const string_view &) noexcept = default;
   ~string_view() = default;
 
   // ---------- Capacity ----------
-  constexpr size_type size() const noexcept
+  size_type size() const noexcept
   {
     return size_;
   }
-  constexpr size_type length() const noexcept
+  size_type length() const noexcept
   {
     return size_;
   }
-  constexpr size_type max_size() const noexcept
+  size_type max_size() const noexcept
   {
     return npos;
   }
-  constexpr bool empty() const noexcept
+  bool empty() const noexcept
   {
     return size_ == 0;
   }
 
   // ---------- Element access ----------
-  constexpr const_pointer data() const noexcept
+  const_pointer data() const noexcept
   {
     return data_;
   }
 
   // If pos < size() is false, the behavior is undefined.
-  constexpr const_reference operator[](size_type pos) const
+  const_reference operator[](size_type pos) const
   {
     return data_[pos];
   }
@@ -91,12 +91,12 @@ class string_view
     return data_[pos];
   }
   // If empty() is true, the behavior is undefined.
-  constexpr const_reference front() const
+  const_reference front() const
   {
     return data_[0];
   }
   // If empty() is true, the behavior is undefined.
-  constexpr const_reference back() const
+  const_reference back() const
   {
     return data_[size_ - 1];
   }
