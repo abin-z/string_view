@@ -5,9 +5,12 @@
 #   - 不会生成静态库 (.a/.lib) 或动态库 (.so/.dll)
 #   - 仅提供接口给依赖它的目标
 #   - 适合纯头文件库或者只需暴露 include 路径的情况
+set(tgt_name abin_string_view)
 
-set(tgt_name tiny_string_view)
 add_library(${tgt_name} INTERFACE)  # 声明一个 INTERFACE 库
+
+# 起一个命名空间别名, 用户可以target_link_libraries(tgt_name PRIVATE abin::string_view)
+add_library(abin::string_view ALIAS abin_string_view)
 
 # -----------------------------
 # 头文件路径设置
