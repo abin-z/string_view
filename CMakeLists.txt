@@ -38,3 +38,5 @@ endif()
 add_subdirectory(string_view)
 add_subdirectory(example)
 add_subdirectory(test)
+
+add_subdirectory(3rd/Catch2)
