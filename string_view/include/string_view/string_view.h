@@ -259,3 +259,29 @@ inline std::string to_string(string_view sv)
 }
 
 }  // namespace abin
+
+// ---------- std 命名空间特化 ----------
+namespace std
+{
+template <>
+struct hash<abin::string_view>
+{
+  size_t operator()(const abin::string_view &sv) const noexcept
+  {
+    size_t h = 0;
+    // 使用 unsigned char 而不是 char 的原因:
+    // 1. 在 C++ 中, char 的 signedness 是实现定义的,
+    //    可能是 signed char 或 unsigned char.
+    //    如果 char 为 signed, 负值在转换为 size_t 时会生成大整数,
+    //    导致同样的字符串在不同平台得到不同的 hash 值.
+    // 2. 使用 unsigned char 可以保证每个字符在 0~255 之间,
+    //    无论平台如何, hash 值都一致.
+    // 3. 这样也可以安全处理任意字节序列, 包括非 ASCII 或二进制数据.
+    for (unsigned char c : sv)
+    {
+      h = h * 131 + static_cast<size_t>(c);
+    }
+    return h;
+  }
+};
+}  // namespace std
