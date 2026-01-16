@@ -164,6 +164,135 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
     return compare(pos1, count1, string_view(s, n));
   }
 
+  /**
+   * @brief 查找单个字符 c，从位置 pos 开始
+   * @param c 要查找的字符
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次出现的位置，如果找不到则返回 npos
+   * @note 如果 pos >= size()，直接返回 npos
+   */
+  size_type find(value_type c, size_type pos = 0) const noexcept
+  {
+    if (pos >= size_) return npos;
+    for (size_type i = pos; i < size_; ++i)
+    {
+      if (data_[i] == c) return i;
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 查找子串 sv，从位置 pos 开始
+   * @param sv 要查找的子串
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
+   * @note 空子串总是匹配当前位置，如果 pos == size()，也返回 size()
+   * @note 如果 pos > size() 或剩余长度不足以匹配子串，则返回 npos
+   */
+  size_type find(string_view sv, size_type pos = 0) const noexcept
+  {
+    if (pos > size_) return npos;             // 越界检查
+    if (sv.size_ == 0) return pos;            // 空子串匹配当前位置
+    if (sv.size_ > size_ - pos) return npos;  // 剩余长度不足
+
+    for (size_type i = pos; i <= size_ - sv.size_; ++i)
+    {
+      if (traits_type::compare(data_ + i, sv.data_, sv.size_) == 0) return i;
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 查找 C 字符串 s（长度为 n）从 pos 开始
+   * @param s 要查找的字符数组
+   * @param pos 起始位置
+   * @param n s 的长度
+   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
+   * @note 直接包装 string_view 查找逻辑
+   */
+  size_type find(const char *s, size_type pos, size_type n) const
+  {
+    return find(string_view(s, n), pos);
+  }
+
+  /**
+   * @brief 查找 null 结尾 C 字符串 s 从 pos 开始
+   * @param s 要查找的 C 字符串
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
+   * @note 直接包装 string_view 查找逻辑
+   */
+  size_type find(const char *s, size_type pos = 0) const
+  {
+    return find(string_view(s), pos);
+  }
+
+  /**
+   * @brief 从末尾向前查找单个字符 c，从 pos 位置开始（pos 默认是末尾）
+   * @param c 要查找的字符
+   * @param pos 起始搜索位置（默认 size() - 1，即从末尾开始）
+   * @return 返回最后一次匹配的位置，如果找不到返回 npos
+   * @note 如果 pos >= size()，搜索从 size() - 1 开始
+   */
+  size_type rfind(value_type c, size_type pos = npos) const noexcept
+  {
+    if (size_ == 0) return npos;
+    // 如果 pos 超过末尾，取末尾位置
+    if (pos >= size_) pos = size_ - 1;
+    for (size_type i = pos + 1; i-- > 0;)  // 注意 i-- > 0 防止溢出
+    {
+      if (data_[i] == c) return i;
+      if (i == 0) break;  // 防止无符号 size_type 变为最大值
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 从末尾向前查找子串 sv，从 pos 位置开始
+   * @param sv 要查找的子串
+   * @param pos 起始搜索位置（默认 size() - 1，即从末尾开始）
+   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
+   * @note 空子串总是匹配当前位置，如果 pos >= size()，从 size() 开始
+   */
+  size_type rfind(string_view sv, size_type pos = npos) const noexcept
+  {
+    if (sv.size_ == 0) return std::min(pos, size_);  // 空子串匹配当前位置
+    if (sv.size_ > size_) return npos;               // 子串比主串长 → 不可能匹配
+
+    // 搜索起始位置
+    pos = std::min(pos, size_ - sv.size_);
+
+    for (size_type i = pos + 1; i-- > 0;)  // 从 pos 向前查找
+    {
+      if (traits_type::compare(data_ + i, sv.data_, sv.size_) == 0) return i;
+      if (i == 0) break;  // 防止 size_type 溢出
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 从末尾向前查找 C 字符串 s（长度为 n）从 pos 开始
+   * @param s 要查找的字符数组
+   * @param pos 起始位置
+   * @param n s 的长度
+   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
+   */
+  size_type rfind(const char *s, size_type pos, size_type n) const noexcept
+  {
+    return rfind(string_view(s, n), pos);
+  }
+
+  /**
+   * @brief 从末尾向前查找 null 结尾 C 字符串 s 从 pos 开始
+   * @param s 要查找的 C 字符串
+   * @param pos 起始位置（默认 size() - 1）
+   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
+   */
+  size_type rfind(const char *s, size_type pos = npos) const noexcept
+  {
+    return rfind(string_view(s), pos);
+  }
+
   // ---------- Modifiers ----------
   void remove_prefix(size_type n) noexcept
   {
