@@ -18,7 +18,7 @@ namespace abin
 {
 
 // ---------- string_view 类 ----------
-class string_view
+class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
 {
  public:
   using traits_type = std::char_traits<char>;  // 目前仅支持 char 类型
@@ -43,9 +43,9 @@ class string_view
   // ---------- 构造 ----------
   string_view() noexcept : data_(nullptr), size_(0) {}
 
-  string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
   // Precondition: str != nullptr
-  string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}
+  string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
+  string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}  // NOLINT(google-explicit-constructor)
 
   explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
 
