@@ -1,6 +1,6 @@
 /**
  * @file string_view.h
- * @brief 简易的 string_view 实现
+ * @brief 简易的 string_view 实现: 一个轻量级、非拥有型的字符串视图类
  * @author abin
  * @date 2026-01-12
  */
