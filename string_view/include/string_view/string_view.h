@@ -47,7 +47,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
   string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}  // NOLINT(google-explicit-constructor)
 
-  explicit string_view(const std::string &str) noexcept : data_(str.data()), size_(str.size()) {}
+  string_view(const std::string &str) noexcept :  // NOLINT(google-explicit-constructor)
+    data_(str.data()), size_(str.size())
+  {
+  }
 
   string_view(const string_view &) noexcept = default;
   string_view(nullptr_t) = delete;
@@ -406,6 +409,21 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   size_type find_first_not_of(const char *s, size_type pos = 0) const noexcept
   {
     return find_first_not_of(string_view(s), pos);
+  }
+
+  bool contains(value_type c) const noexcept
+  {
+    return find(c) != npos;
+  }
+
+  bool contains(string_view sv) const noexcept
+  {
+    return find(sv) != npos;
+  }
+
+  bool contains(const char *s) const noexcept
+  {
+    return find(string_view(s)) != npos;
   }
 
   // ---------- Modifiers ----------
