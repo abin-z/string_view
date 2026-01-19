@@ -494,7 +494,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   bool ends_with(string_view sv) const noexcept
   {
     if (sv.size() > size_) return false;
-    return traits_type::compare(data_ + size_ - sv.size_, sv.data_, sv.size_) == 0;
+    return traits_type::compare(data_ + (size_ - sv.size_), sv.data_, sv.size_) == 0;
   }
 
   /**
