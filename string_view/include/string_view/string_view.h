@@ -293,6 +293,121 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
     return rfind(string_view(s), pos);
   }
 
+  /**
+   * @brief 查找字符集合中任意一个字符，从位置 pos 开始
+   * @param c 要查找的字符
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @note 等价于 find(c, pos)
+   */
+  size_type find_first_of(value_type c, size_type pos = 0) const noexcept
+  {
+    return find(c, pos);
+  }
+
+  /**
+   * @brief 查找字符集合 sv 中任意一个字符，从位置 pos 开始
+   * @param sv 字符集合（只要匹配其中任意一个字符即可）
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @note 如果 pos >= size()，直接返回 npos
+   * @note 如果 sv 为空，则永远返回 npos
+   */
+  size_type find_first_of(string_view sv, size_type pos = 0) const noexcept
+  {
+    if (pos >= size_) return npos;
+    for (size_type i = pos; i < size_; ++i)
+    {
+      if (sv.find(data_[i]) != npos) return i;
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 查找字符数组 s（长度为 n）中任意一个字符，从位置 pos 开始
+   * @param s 字符数组（字符集合）
+   * @param pos 起始位置
+   * @param n 字符数组长度
+   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @note 直接包装 string_view 版本的 find_first_of
+   */
+  size_type find_first_of(const char *s, size_type pos, size_type n) const noexcept
+  {
+    return find_first_of(string_view(s, n), pos);
+  }
+
+  /**
+   * @brief 查找 null 结尾 C 字符串 s 中任意一个字符，从位置 pos 开始
+   * @param s 要查找的 C 字符串（字符集合）
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @note 直接包装 string_view 版本的 find_first_of
+   */
+  size_type find_first_of(const char *s, size_type pos = 0) const noexcept
+  {
+    return find_first_of(string_view(s), pos);
+  }
+
+  /**
+   * @brief 查找第一个不等于字符 c 的位置，从 pos 开始
+   * @param c 要排除的字符
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   * @note 等价于 find_first_not_of(string_view(&c, 1), pos)
+   */
+  size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept
+  {
+    if (pos >= size_) return npos;
+    for (size_type i = pos; i < size_; ++i)
+    {
+      if (data_[i] != c) return i;
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 查找第一个不在字符集合 sv 中的字符，从 pos 开始
+   * @param sv 字符集合
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   * @note 如果 pos >= size()，直接返回 npos
+   * @note 如果 sv 为空，则返回 pos（只要 pos < size()）
+   */
+  size_type find_first_not_of(string_view sv, size_type pos = 0) const noexcept
+  {
+    if (pos >= size_) return npos;
+    if (sv.size() == 0) return pos;
+
+    for (size_type i = pos; i < size_; ++i)
+    {
+      if (sv.find(data_[i]) == npos) return i;
+    }
+    return npos;
+  }
+
+  /**
+   * @brief 查找字符数组 s（长度为 n）中不存在的字符，从 pos 开始
+   * @param s 字符数组（字符集合）
+   * @param pos 起始位置
+   * @param n 字符数组长度
+   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   */
+  size_type find_first_not_of(const char *s, size_type pos, size_type n) const noexcept
+  {
+    return find_first_not_of(string_view(s, n), pos);
+  }
+
+  /**
+   * @brief 查找 null 结尾 C 字符串 s 中不存在的字符，从 pos 开始
+   * @param s 字符集合
+   * @param pos 起始位置（默认 0）
+   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   */
+  size_type find_first_not_of(const char *s, size_type pos = 0) const noexcept
+  {
+    return find_first_not_of(string_view(s), pos);
+  }
+
   // ---------- Modifiers ----------
   void remove_prefix(size_type n) noexcept
   {
