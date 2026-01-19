@@ -528,6 +528,12 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
     swap(size_, other.size_);
   }
 
+  // ---------- 转 std::string ----------
+  std::string to_string() const
+  {
+    return {data_, size_};
+  }
+
   // ---------- Iterators ----------
   const_iterator begin() const noexcept
   {
@@ -593,12 +599,6 @@ inline std::ostream &operator<<(std::ostream &os, string_view sv)
 {
   if (sv.size() != 0) os.write(sv.data(), static_cast<std::streamsize>(sv.size()));
   return os;
-}
-
-// ---------- 转 std::string ----------
-inline std::string to_string(string_view sv)
-{
-  return {sv.data(), sv.size()};
 }
 
 }  // namespace abin
