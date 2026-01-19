@@ -1,6 +1,6 @@
 # abin::string_view
 
-`abin::string_view` 是一个轻量级、非拥有型的字符串视图类，模仿 C++17 的 `std::string_view`，用于高效访问已有的字符串数据而不做拷贝。
+[`abin::string_view`](string_view/include/abin/string_view.h) 是一个轻量级、非拥有型的字符串视图类，模仿 C++17 的 [`std::string_view`](https://en.cppreference.com/w/cpp/string/basic_string_view.html)，用于高效访问已有的字符串数据而不做拷贝。
 
 完全在C++11标准下实现, 支持 `const char*`、`std::string` 和 `string_view` 的无拷贝访问。
 
@@ -15,13 +15,16 @@
 
 ## 使用
 
-将 `string_view.h` 头文件包含到你的项目中即可，无需额外依赖。
-支持 C++11 及以上版本。
+将[`string_view.h`](string_view/include/abin/string_view.h) 头文件包含到你的项目中即可，无需额外依赖。
+
+```cpp
+#include "abin/string_view.h"
+```
 
 ## 使用示例
 
 ```cpp
-#include "string_view.h"
+#include "abin/string_view.h"
 #include <iostream>
 #include <string>
 
@@ -133,4 +136,4 @@ std::ostream &operator<<(std::ostream &os, string_view sv);
 
 ## 测试
 
-使用 Catch2 编写了完整的单元测试，覆盖构造、比较、查找、检查、修改等所有功能。
+使用 [Catch2](https://github.com/catchorg/Catch2) 编写了完整的单元测试，覆盖构造、比较、查找、检查、修改等所有功能。
