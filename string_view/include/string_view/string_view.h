@@ -411,19 +411,100 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
     return find_first_not_of(string_view(s), pos);
   }
 
+  /**
+   * @brief 检查字符串中是否包含字符 c
+   * @param c 要查找的字符
+   * @return 如果包含返回 true，否则返回 false
+   */
   bool contains(value_type c) const noexcept
   {
     return find(c) != npos;
   }
 
+  /**
+   * @brief 检查字符串中是否包含子串 sv
+   * @param sv 要查找的子串
+   * @return 如果包含返回 true，否则返回 false
+   */
   bool contains(string_view sv) const noexcept
   {
     return find(sv) != npos;
   }
 
+  /**
+   * @brief 检查字符串中是否包含 null 结尾的 C 字符串 s
+   * @param s 要查找的 C 字符串
+   * @return 如果包含返回 true，否则返回 false
+   */
   bool contains(const char *s) const noexcept
   {
     return find(string_view(s)) != npos;
+  }
+
+  /**
+   * @brief 检查字符串是否以字符 c 开头
+   * @param c 起始字符
+   * @return 如果以 c 开头返回 true，否则返回 false
+   * @note 空串总是返回 false
+   */
+  bool starts_with(value_type c) const noexcept
+  {
+    return !empty() && data_[0] == c;
+  }
+
+  /**
+   * @brief 检查字符串是否以子串 sv 开头
+   * @param sv 起始子串
+   * @return 如果以 sv 开头返回 true，否则返回 false
+   * @note 如果 sv.size() > size()，直接返回 false
+   */
+  bool starts_with(string_view sv) const noexcept
+  {
+    if (sv.size() > size_) return false;                          // 子串比主串长 → 不可能匹配
+    return traits_type::compare(data_, sv.data_, sv.size_) == 0;  // 前 sv.size_ 个字符完全相等
+  }
+
+  /**
+   * @brief 检查字符串是否以 null 结尾 C 字符串开头
+   * @param s C 字符串
+   * @return 如果以 s 开头返回 true，否则返回 false
+   */
+  bool starts_with(const char *s) const
+  {
+    return starts_with(string_view(s));
+  }
+
+  /**
+   * @brief 检查字符串是否以字符 c 结尾
+   * @param c 末尾字符
+   * @return 如果以 c 结尾返回 true，否则返回 false
+   * @note 空串总是返回 false
+   */
+  bool ends_with(value_type c) const noexcept
+  {
+    return !empty() && data_[size_ - 1] == c;
+  }
+
+  /**
+   * @brief 检查字符串是否以子串 sv 结尾
+   * @param sv 末尾子串
+   * @return 如果以 sv 结尾返回 true，否则返回 false
+   * @note 如果 sv.size() > size()，直接返回 false
+   */
+  bool ends_with(string_view sv) const noexcept
+  {
+    if (sv.size() > size_) return false;
+    return traits_type::compare(data_ + size_ - sv.size_, sv.data_, sv.size_) == 0;
+  }
+
+  /**
+   * @brief 检查字符串是否以 null 结尾 C 字符串结尾
+   * @param s C 字符串
+   * @return 如果以 s 结尾返回 true，否则返回 false
+   */
+  bool ends_with(const char *s) const
+  {
+    return ends_with(string_view(s));
   }
 
   // ---------- Modifiers ----------
