@@ -54,7 +54,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   string_view(const string_view &) noexcept = default;
-  string_view(nullptr_t) = delete;
+  string_view(std::nullptr_t) = delete;
 
   string_view &operator=(const string_view &) noexcept = default;
   ~string_view() = default;
