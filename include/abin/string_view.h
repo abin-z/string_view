@@ -34,7 +34,17 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   using reverse_iterator = const_reverse_iterator;
   using size_type = size_t;
   using difference_type = ptrdiff_t;
-  static constexpr auto npos{static_cast<size_type>(-1)};
+  // 使用匿名 enum 定义 npos, 而不是 static constexpr
+  // 原因：
+  // 1. 在 C++11 中, 类内 static constexpr 成员如果被 ODR-use(如取值、传参等), 
+  //    仍然需要在类外提供定义, 否则会导致链接错误(undefined symbol)。
+  // 2. 本类设计为 header-only, 如果使用 static constexpr, 会引入多重定义或需要额外 .cpp 文件。
+  // 3. enum 常量是纯编译期常量, 不占用存储空间, 不参与链接, 天然避免 ODR 问题。
+  // 4. 该值语义上等价于 std::string_view::npos(通常为 size_type(-1))。
+  enum : size_type
+  {
+    npos = static_cast<size_type>(-1)
+  };
 
  private:
   const value_type *data_;
@@ -169,11 +179,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找单个字符 c，从位置 pos 开始
+   * @brief 查找单个字符 c, 从位置 pos 开始
    * @param c 要查找的字符
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次出现的位置，如果找不到则返回 npos
-   * @note 如果 pos >= size()，直接返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次出现的位置, 如果找不到则返回 npos
+   * @note 如果 pos >= size(), 直接返回 npos
    */
   size_type find(value_type c, size_type pos = 0) const noexcept
   {
@@ -186,12 +196,12 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找子串 sv，从位置 pos 开始
+   * @brief 查找子串 sv, 从位置 pos 开始
    * @param sv 要查找的子串
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
-   * @note 空子串总是匹配当前位置，如果 pos == size()，也返回 size()
-   * @note 如果 pos > size() 或剩余长度不足以匹配子串，则返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次匹配的起始位置, 如果找不到则返回 npos
+   * @note 空子串总是匹配当前位置, 如果 pos == size(), 也返回 size()
+   * @note 如果 pos > size() 或剩余长度不足以匹配子串, 则返回 npos
    */
   size_type find(string_view sv, size_type pos = 0) const noexcept
   {
@@ -207,11 +217,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找 C 字符串 s（长度为 n）从 pos 开始
+   * @brief 查找 C 字符串 s(长度为 n)从 pos 开始
    * @param s 要查找的字符数组
    * @param pos 起始位置
    * @param n s 的长度
-   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
+   * @return 返回首次匹配的起始位置, 如果找不到则返回 npos
    * @note 直接包装 string_view 查找逻辑
    */
   size_type find(const char *s, size_type pos, size_type n) const
@@ -222,8 +232,8 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 查找 null 结尾 C 字符串 s 从 pos 开始
    * @param s 要查找的 C 字符串
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次匹配的起始位置，如果找不到则返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次匹配的起始位置, 如果找不到则返回 npos
    * @note 直接包装 string_view 查找逻辑
    */
   size_type find(const char *s, size_type pos = 0) const
@@ -232,16 +242,16 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 从末尾向前查找单个字符 c，从 pos 位置开始（pos 默认是末尾）
+   * @brief 从末尾向前查找单个字符 c, 从 pos 位置开始(pos 默认是末尾)
    * @param c 要查找的字符
-   * @param pos 起始搜索位置（默认 size() - 1，即从末尾开始）
-   * @return 返回最后一次匹配的位置，如果找不到返回 npos
-   * @note 如果 pos >= size()，搜索从 size() - 1 开始
+   * @param pos 起始搜索位置(默认 size() - 1, 即从末尾开始)
+   * @return 返回最后一次匹配的位置, 如果找不到返回 npos
+   * @note 如果 pos >= size(), 搜索从 size() - 1 开始
    */
   size_type rfind(value_type c, size_type pos = npos) const noexcept
   {
     if (size_ == 0) return npos;
-    // 如果 pos 超过末尾，取末尾位置
+    // 如果 pos 超过末尾, 取末尾位置
     if (pos >= size_) pos = size_ - 1;
     for (size_type i = pos + 1; i-- > 0;)  // 注意 i-- > 0 防止溢出
     {
@@ -252,11 +262,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 从末尾向前查找子串 sv，从 pos 位置开始
+   * @brief 从末尾向前查找子串 sv, 从 pos 位置开始
    * @param sv 要查找的子串
-   * @param pos 起始搜索位置（默认 size() - 1，即从末尾开始）
-   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
-   * @note 空子串总是匹配当前位置，如果 pos >= size()，从 size() 开始
+   * @param pos 起始搜索位置(默认 size() - 1, 即从末尾开始)
+   * @return 返回最后一次匹配的起始位置, 如果找不到返回 npos
+   * @note 空子串总是匹配当前位置, 如果 pos >= size(), 从 size() 开始
    */
   size_type rfind(string_view sv, size_type pos = npos) const noexcept
   {
@@ -275,11 +285,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 从末尾向前查找 C 字符串 s（长度为 n）从 pos 开始
+   * @brief 从末尾向前查找 C 字符串 s(长度为 n)从 pos 开始
    * @param s 要查找的字符数组
    * @param pos 起始位置
    * @param n s 的长度
-   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
+   * @return 返回最后一次匹配的起始位置, 如果找不到返回 npos
    */
   size_type rfind(const char *s, size_type pos, size_type n) const noexcept
   {
@@ -289,8 +299,8 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 从末尾向前查找 null 结尾 C 字符串 s 从 pos 开始
    * @param s 要查找的 C 字符串
-   * @param pos 起始位置（默认 size() - 1）
-   * @return 返回最后一次匹配的起始位置，如果找不到返回 npos
+   * @param pos 起始位置(默认 size() - 1)
+   * @return 返回最后一次匹配的起始位置, 如果找不到返回 npos
    */
   size_type rfind(const char *s, size_type pos = npos) const noexcept
   {
@@ -298,10 +308,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找字符集合中任意一个字符，从位置 pos 开始
+   * @brief 查找字符集合中任意一个字符, 从位置 pos 开始
    * @param c 要查找的字符
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次匹配的位置, 如果找不到则返回 npos
    * @note 等价于 find(c, pos)
    */
   size_type find_first_of(value_type c, size_type pos = 0) const noexcept
@@ -310,12 +320,12 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找字符集合 sv 中任意一个字符，从位置 pos 开始
-   * @param sv 字符集合（只要匹配其中任意一个字符即可）
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次匹配的位置，如果找不到则返回 npos
-   * @note 如果 pos >= size()，直接返回 npos
-   * @note 如果 sv 为空，则永远返回 npos
+   * @brief 查找字符集合 sv 中任意一个字符, 从位置 pos 开始
+   * @param sv 字符集合(只要匹配其中任意一个字符即可)
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次匹配的位置, 如果找不到则返回 npos
+   * @note 如果 pos >= size(), 直接返回 npos
+   * @note 如果 sv 为空, 则永远返回 npos
    */
   size_type find_first_of(string_view sv, size_type pos = 0) const noexcept
   {
@@ -328,11 +338,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找字符数组 s（长度为 n）中任意一个字符，从位置 pos 开始
-   * @param s 字符数组（字符集合）
+   * @brief 查找字符数组 s(长度为 n)中任意一个字符, 从位置 pos 开始
+   * @param s 字符数组(字符集合)
    * @param pos 起始位置
    * @param n 字符数组长度
-   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @return 返回首次匹配的位置, 如果找不到则返回 npos
    * @note 直接包装 string_view 版本的 find_first_of
    */
   size_type find_first_of(const char *s, size_type pos, size_type n) const noexcept
@@ -341,10 +351,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找 null 结尾 C 字符串 s 中任意一个字符，从位置 pos 开始
-   * @param s 要查找的 C 字符串（字符集合）
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次匹配的位置，如果找不到则返回 npos
+   * @brief 查找 null 结尾 C 字符串 s 中任意一个字符, 从位置 pos 开始
+   * @param s 要查找的 C 字符串(字符集合)
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次匹配的位置, 如果找不到则返回 npos
    * @note 直接包装 string_view 版本的 find_first_of
    */
   size_type find_first_of(const char *s, size_type pos = 0) const noexcept
@@ -353,10 +363,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找第一个不等于字符 c 的位置，从 pos 开始
+   * @brief 查找第一个不等于字符 c 的位置, 从 pos 开始
    * @param c 要排除的字符
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次不匹配的位置, 如果找不到则返回 npos
    * @note 等价于 find_first_not_of(string_view(&c, 1), pos)
    */
   size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept
@@ -370,12 +380,12 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找第一个不在字符集合 sv 中的字符，从 pos 开始
+   * @brief 查找第一个不在字符集合 sv 中的字符, 从 pos 开始
    * @param sv 字符集合
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次不匹配的位置，如果找不到则返回 npos
-   * @note 如果 pos >= size()，直接返回 npos
-   * @note 如果 sv 为空，则返回 pos（只要 pos < size()）
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次不匹配的位置, 如果找不到则返回 npos
+   * @note 如果 pos >= size(), 直接返回 npos
+   * @note 如果 sv 为空, 则返回 pos(只要 pos < size())
    */
   size_type find_first_not_of(string_view sv, size_type pos = 0) const noexcept
   {
@@ -390,11 +400,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找字符数组 s（长度为 n）中不存在的字符，从 pos 开始
-   * @param s 字符数组（字符集合）
+   * @brief 查找字符数组 s(长度为 n)中不存在的字符, 从 pos 开始
+   * @param s 字符数组(字符集合)
    * @param pos 起始位置
    * @param n 字符数组长度
-   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   * @return 返回首次不匹配的位置, 如果找不到则返回 npos
    */
   size_type find_first_not_of(const char *s, size_type pos, size_type n) const noexcept
   {
@@ -402,10 +412,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   /**
-   * @brief 查找 null 结尾 C 字符串 s 中不存在的字符，从 pos 开始
+   * @brief 查找 null 结尾 C 字符串 s 中不存在的字符, 从 pos 开始
    * @param s 字符集合
-   * @param pos 起始位置（默认 0）
-   * @return 返回首次不匹配的位置，如果找不到则返回 npos
+   * @param pos 起始位置(默认 0)
+   * @return 返回首次不匹配的位置, 如果找不到则返回 npos
    */
   size_type find_first_not_of(const char *s, size_type pos = 0) const noexcept
   {
@@ -415,7 +425,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串中是否包含字符 c
    * @param c 要查找的字符
-   * @return 如果包含返回 true，否则返回 false
+   * @return 如果包含返回 true, 否则返回 false
    */
   bool contains(value_type c) const noexcept
   {
@@ -425,7 +435,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串中是否包含子串 sv
    * @param sv 要查找的子串
-   * @return 如果包含返回 true，否则返回 false
+   * @return 如果包含返回 true, 否则返回 false
    */
   bool contains(string_view sv) const noexcept
   {
@@ -435,7 +445,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串中是否包含 null 结尾的 C 字符串 s
    * @param s 要查找的 C 字符串
-   * @return 如果包含返回 true，否则返回 false
+   * @return 如果包含返回 true, 否则返回 false
    */
   bool contains(const char *s) const noexcept
   {
@@ -445,7 +455,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以字符 c 开头
    * @param c 起始字符
-   * @return 如果以 c 开头返回 true，否则返回 false
+   * @return 如果以 c 开头返回 true, 否则返回 false
    * @note 空串总是返回 false
    */
   bool starts_with(value_type c) const noexcept
@@ -456,8 +466,8 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以子串 sv 开头
    * @param sv 起始子串
-   * @return 如果以 sv 开头返回 true，否则返回 false
-   * @note 如果 sv.size() > size()，直接返回 false
+   * @return 如果以 sv 开头返回 true, 否则返回 false
+   * @note 如果 sv.size() > size(), 直接返回 false
    */
   bool starts_with(string_view sv) const noexcept
   {
@@ -468,7 +478,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以 null 结尾 C 字符串开头
    * @param s C 字符串
-   * @return 如果以 s 开头返回 true，否则返回 false
+   * @return 如果以 s 开头返回 true, 否则返回 false
    */
   bool starts_with(const char *s) const
   {
@@ -478,7 +488,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以字符 c 结尾
    * @param c 末尾字符
-   * @return 如果以 c 结尾返回 true，否则返回 false
+   * @return 如果以 c 结尾返回 true, 否则返回 false
    * @note 空串总是返回 false
    */
   bool ends_with(value_type c) const noexcept
@@ -489,8 +499,8 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以子串 sv 结尾
    * @param sv 末尾子串
-   * @return 如果以 sv 结尾返回 true，否则返回 false
-   * @note 如果 sv.size() > size()，直接返回 false
+   * @return 如果以 sv 结尾返回 true, 否则返回 false
+   * @note 如果 sv.size() > size(), 直接返回 false
    */
   bool ends_with(string_view sv) const noexcept
   {
@@ -501,7 +511,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   /**
    * @brief 检查字符串是否以 null 结尾 C 字符串结尾
    * @param s C 字符串
-   * @return 如果以 s 结尾返回 true，否则返回 false
+   * @return 如果以 s 结尾返回 true, 否则返回 false
    */
   bool ends_with(const char *s) const
   {
