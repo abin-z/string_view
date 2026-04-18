@@ -1,6 +1,7 @@
 /**
  * @file string_view.h
- * @brief 简易的 string_view 实现: 一个轻量级、非拥有型的字符串视图类
+ * @brief 简易的 string_view 实现: 一个轻量级、非拥有型的字符串视图类, 可用在c++11及以上版本中
+ *        设计目标是提供一个类似于 C++17 std::string_view 的接口
  * @author abin
  * @date 2026-01-12
  */
