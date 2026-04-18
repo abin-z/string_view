@@ -623,7 +623,7 @@ struct hash<abin::string_view>
     // 3. 这样也可以安全处理任意字节序列, 包括非 ASCII 或二进制数据.
     for (unsigned char c : sv)
     {
-      h = h * 131 + static_cast<size_t>(c);
+      h = (h * 131) + static_cast<size_t>(c);
     }
     return h;
   }
