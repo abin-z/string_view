@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
-#include "catch2/catch.hpp"
 #include "abin/string_view.h"
+#include "catch2/catch.hpp"
 
 using abin::string_view;
 
@@ -307,4 +307,57 @@ TEST_CASE("string_view ostream output2")
   std::ostringstream oss;
   oss << sv;
   REQUIRE(oss.str() == "abc");
+}
+
+TEST_CASE("string_view ostream output - empty")
+{
+  abin::string_view sv;
+  std::ostringstream oss;
+  oss << sv;
+  REQUIRE(oss.str().empty());
+}
+
+TEST_CASE("string_view ostream output - substring")
+{
+  std::string s = "abcdef";
+  abin::string_view sv(s.data() + 2, 3);  // "cde"
+
+  std::ostringstream oss;
+  oss << sv;
+
+  REQUIRE(oss.str() == "cde");
+}
+
+TEST_CASE("string_view ostream output - embedded null")
+{
+  const char data[] = {'a', 'b', '\0', 'c', 'd'};
+  abin::string_view sv(data, 5);
+
+  std::ostringstream oss;
+  oss << sv;
+
+  std::string result = oss.str();
+  REQUIRE(result.size() == 5);
+  REQUIRE(result[0] == 'a');
+  REQUIRE(result[1] == 'b');
+  REQUIRE(result[2] == '\0');
+  REQUIRE(result[3] == 'c');
+  REQUIRE(result[4] == 'd');
+}
+
+TEST_CASE("string_view ostream output - no crash on empty data pointer")
+{
+  abin::string_view sv;
+  std::ostringstream oss;
+
+  REQUIRE_NOTHROW(oss << sv);
+}
+
+TEST_CASE("string_view nullptr ctor - safe behavior")
+{
+  const char *p = nullptr;
+  abin::string_view sv(p);
+
+  REQUIRE(sv.size() == 0);
+  REQUIRE(sv.empty());
 }
