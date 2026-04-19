@@ -1,10 +1,22 @@
-/**
- * @file string_view.h
- * @brief 简易的 string_view 实现: 一个轻量级、非拥有型的字符串视图类, 可用在c++11及以上版本中
- *        设计目标是提供一个类似于 C++17 std::string_view 的接口
- * @author abin
- * @date 2026-01-12
- */
+/**************************************************************************************************************
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * @file: string_view.h
+ * @version: v0.1.0
+ * @description: A lightweight, non-owning string view implementation for C++11 and above.
+ * - Design Philosophy :
+ *   - Non-owning: Does not manage string memory, only holds a pointer and length for lightweight usage.
+ *   - Zero-copy access: Operates directly on existing string data without additional allocations or copies.
+ *   - Lightweight & Efficient: Internally uses only `const char*` and `size_t`, with minimal overhead.
+ *   - Safe & Convenient: Provides bounds-checked access via `at()` and rich operations like search,
+ *     comparison, and substring.
+ *   - Standard-friendly: Seamlessly integrates with `std::ostream` for direct output.
+ *   - Hash support: Provides `std::hash` specialization for use in `unordered_map` and `unordered_set`.
+ *
+ * @author: abin
+ * @date: 2026-01-12
+ * @license: MIT
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ **************************************************************************************************************/
 
 #pragma once
 
