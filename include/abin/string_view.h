@@ -36,7 +36,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   using difference_type = ptrdiff_t;
   // 使用匿名 enum 定义 npos, 而不是 static constexpr
   // 原因：
-  // 1. 在 C++11 中, 类内 static constexpr 成员如果被 ODR-use(如取值、传参等), 
+  // 1. 在 C++11 中, 类内 static constexpr 成员如果被 ODR-use(如取值、传参等),
   //    仍然需要在类外提供定义, 否则会导致链接错误(undefined symbol)。
   // 2. 本类设计为 header-only, 如果使用 static constexpr, 会引入多重定义或需要额外 .cpp 文件。
   // 3. enum 常量是纯编译期常量, 不占用存储空间, 不参与链接, 天然避免 ODR 问题。
@@ -56,7 +56,10 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
 
   // Precondition: str != nullptr
   string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
-  string_view(const char *str) : data_(str), size_(traits_type::length(str)) {}  // NOLINT(google-explicit-constructor)
+  string_view(const char *str) :  // NOLINT(google-explicit-constructor)
+    data_(str), size_((str != nullptr) ? traits_type::length(str) : 0)
+  {
+  }
 
   string_view(const std::string &str) noexcept :  // NOLINT(google-explicit-constructor)
     data_(str.data()), size_(str.size())
