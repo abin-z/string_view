@@ -1,5 +1,5 @@
 # 指定CMake最低版本要求
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.15..3.31)
 
 project(abin_string_view LANGUAGES C CXX VERSION 0.1.0)
 
