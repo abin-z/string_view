@@ -54,10 +54,7 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   // 2. 本类设计为 header-only, 如果使用 static constexpr, 会引入多重定义或需要额外 .cpp 文件。
   // 3. enum 常量是纯编译期常量, 不占用存储空间, 不参与链接, 天然避免 ODR 问题。
   // 4. 该值语义上等价于 std::string_view::npos(通常为 size_type(-1))。
-  enum : size_type
-  {
-    npos = static_cast<size_type>(-1)
-  };
+  enum : size_type { npos = static_cast<size_type>(-1) };
 
  private:
   const value_type *data_;
@@ -71,13 +68,11 @@ class string_view  // NOLINT(cppcoreguidelines-special-member-functions)
   string_view(const char *str, size_type len) noexcept : data_(str), size_(len) {}
   string_view(const char *str) :  // NOLINT(google-explicit-constructor)
     data_(str), size_((str != nullptr) ? traits_type::length(str) : 0)
-  {
-  }
+  {}
 
   string_view(const std::string &str) noexcept :  // NOLINT(google-explicit-constructor)
     data_(str.data()), size_(str.size())
-  {
-  }
+  {}
 
   string_view(const string_view &) noexcept = default;
   string_view(std::nullptr_t) = delete;
@@ -634,8 +629,7 @@ inline std::ostream &operator<<(std::ostream &os, string_view sv)
 namespace std
 {
 template <>
-struct hash<abin::string_view>
-{
+struct hash<abin::string_view> {
   size_t operator()(const abin::string_view &sv) const noexcept
   {
     size_t h = 0;
