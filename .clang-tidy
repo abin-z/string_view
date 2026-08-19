@@ -24,8 +24,7 @@ Checks: >-
   -cert-env33-c,
   -google-runtime-int,
   -readability-identifier-length,
-  -readability-redundant-access-specifiers,
-  -readability-convert-member-functions-to-static
+  -readability-redundant-access-specifiers
 
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
@@ -52,4 +51,3 @@ CheckOptions:
     value:           llvm
   - key:             modernize-use-nullptr.NullMacros
     value:           'NULL'
-
